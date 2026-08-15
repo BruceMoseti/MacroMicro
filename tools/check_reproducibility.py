@@ -68,12 +68,24 @@ def compare(name: str, expected: pd.DataFrame, actual: pd.DataFrame) -> tuple[bo
         left, right = expected[column], actual[column]
         if pd.api.types.is_numeric_dtype(left) and pd.api.types.is_numeric_dtype(right):
             a, b = left.to_numpy(dtype=float), right.to_numpy(dtype=float)
-            both_nan = np.isnan(a) & np.isnan(b)
             if not np.array_equal(np.isnan(a), np.isnan(b)):
                 problems.append(f"{column}: NaN pattern changed")
                 continue
-            difference = np.abs(a - b)[~both_nan]
-            allowed = (ATOL + RTOL * np.abs(b))[~both_nan]
+            # Infinities are compared by position and sign rather than by subtraction.
+            # They are meaningful values here, not artifacts: a rank-deficient regression
+            # reports an infinite condition number, and that must stay infinite.
+            # np.where rather than multiplication, so a NaN entry yields 0 instead of
+            # propagating NaN and making array_equal false for any column with gaps.
+            if not np.array_equal(
+                np.where(np.isinf(a), np.sign(a), 0.0), np.where(np.isinf(b), np.sign(b), 0.0)
+            ):
+                problems.append(f"{column}: infinity pattern changed")
+                continue
+            # Non-finite entries are excluded before subtracting, not after, so the
+            # comparison cannot emit invalid-value warnings.
+            finite = np.isfinite(b)
+            difference = np.abs(a[finite] - b[finite])
+            allowed = ATOL + RTOL * np.abs(b[finite])
             if difference.size:
                 worst = max(worst, float(np.nanmax(difference)))
                 exceeded = int((difference > allowed).sum())
@@ -81,7 +93,7 @@ def compare(name: str, expected: pd.DataFrame, actual: pd.DataFrame) -> tuple[bo
                     index = int(np.nanargmax(difference - allowed))
                     problems.append(
                         f"{column}: {exceeded} value(s) beyond tolerance, worst "
-                        f"{b[~both_nan][index]:.10g} -> {a[~both_nan][index]:.10g}"
+                        f"{b[finite][index]:.10g} -> {a[finite][index]:.10g}"
                     )
         elif not left.astype(str).equals(right.astype(str)):
             changed = int((left.astype(str) != right.astype(str)).sum())

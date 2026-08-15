@@ -3,6 +3,8 @@
 **A production-style research system for cross-asset macro and relative value.**
 Python · pandas · NumPy · statsmodels · Excel · time series analysis
 
+[![CI](https://github.com/BruceMoseti/MacroMicro/actions/workflows/ci.yml/badge.svg)](https://github.com/BruceMoseti/MacroMicro/actions/workflows/ci.yml)
+
 Financial firms run on a specific kind of software: pipelines that pull messy market data
 from several providers, reshape it correctly, and feed models whose answers move money. When
 that software is subtly wrong, the model does not crash — it produces a confident, plausible,
@@ -21,8 +23,8 @@ and reported honestly — including the two that did not work.
 | | |
 |---|---|
 | **What it does** | Ingests 5 datasets across 4 APIs, engineers 164 features, runs 3 research hypotheses, backtests 13 strategies, and publishes a 26-sheet Excel monitor, 17 charts and a 13-section research report |
-| **Scale** | 5,086 lines of Python across 16 modules · 2,512 trading days · 23 market, macro and positioning series |
-| **Correctness** | 84 automated tests · 55 data-integrity and leakage checks · pipeline exits non-zero on any critical failure |
+| **Scale** | 5,107 lines of Python across 16 modules · 2,512 trading days · 23 market, macro and positioning series |
+| **Correctness** | 96 automated tests · 55 data-integrity and leakage checks · pipeline exits non-zero on any critical failure |
 | **Reproducibility** | A fresh clone regenerates every result in 18 seconds, verified in CI against the committed values to a numerical tolerance |
 | **Domain bugs caught** | 8 documented failure modes that a naive implementation would ship silently (see below) |
 | **Skills demonstrated** | Data engineering · time series statistics · testing & validation design · financial domain knowledge · technical writing |
@@ -228,7 +230,7 @@ pip install -r requirements.txt
 
 python run_pipeline.py                 # full analysis, no network needed        (18s)
 python run_pipeline.py --source fred   # live data from FRED / CFTC / Cboe
-python -m pytest                       # 84 tests                                (7s)
+python -m pytest                       # 96 tests                                (7s)
 python tools/build_notebooks.py        # regenerate and execute the notebooks
 ```
 
@@ -237,10 +239,10 @@ python tools/build_notebooks.py        # regenerate and execute the notebooks
 ## Repository
 
 ```
-src/                 16 modules, 5,086 lines — see the architecture table above
+src/                 16 modules, 5,107 lines — see the architecture table above
 notebooks/           5 notebooks, committed with output already executed
                      overview · relationships · relative value · positioning · backtests
-tests/               84 tests, 827 lines
+tests/               96 tests, 946 lines
 outputs/
   charts/            17 figures, each stamped with its date range and data source
   tables/            20 CSV tables
@@ -321,7 +323,7 @@ declared so the Holm-Bonferroni correction covers it rather than the survivors.
 equities, commodities, volatility and derivatives positioning. It uses ten years of data to study
 how these markets interact, builds models to spot unusual relationships between them, tests those
 ideas against history, and produces an Excel dashboard summarising current conditions and
-results. The engineering emphasis is on getting it *right*: 84 tests and 55 data checks exist
+results. The engineering emphasis is on getting it *right*: 96 tests and 55 data checks exist
 because in finance a wrong number looks exactly like a right one.
 
 ---
@@ -334,14 +336,14 @@ and the pipeline prints its own.
 
 > **Macro Markets Quantitative Research Platform** | Python, pandas, NumPy, statsmodels, Excel, Time Series Analysis
 >
-> - Built a **5,000-line, 16-module** research pipeline ingesting **5 datasets across 4 APIs** at
+> - Built a **5,100-line, 16-module** research pipeline ingesting **5 datasets across 4 APIs** at
 >   three frequencies into **164 engineered features** over **2,512 trading days** of rates, FX,
 >   equity, commodity, volatility and derivatives-positioning data, with **deterministic output
 >   verified in CI** against committed results to a stated numerical tolerance.
 > - Engineered **55 automated data-integrity and leakage checks**, including a perturbation test
 >   that proves no calculation uses future information, plus publication-aware alignment of
 >   weekly positioning data and point-in-time economic vintages to eliminate look-ahead bias;
->   backed by **84 unit tests** covering the validation layer itself.
+>   backed by **96 unit tests**, including tests of the validation layer itself.
 > - Tested **3 pre-registered hypotheses** and backtested **13 strategies** with
 >   autocorrelation-robust regression, stationarity and cointegration testing, volatility-target
 >   sizing and a transaction-cost grid; reported that **no strategy was profitable across all
