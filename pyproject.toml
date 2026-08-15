@@ -1,0 +1,15 @@
+[tool.ruff]
+line-length = 120
+target-version = "py312"
+
+[tool.ruff.lint]
+# F catches unused imports and undefined names; E9 catches syntax and IO errors;
+# B catches likely bugs. B905 is excluded because several zips here pair a fixed list of
+# panel definitions against a matplotlib axes array, where a length mismatch is intended.
+select = ["F", "E9", "B", "UP"]
+ignore = ["B905"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+filterwarnings = ["error::FutureWarning"]

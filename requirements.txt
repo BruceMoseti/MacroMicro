@@ -1,0 +1,21 @@
+# Macro Markets Quantitative Research Platform
+# Verified against Python 3.12. Pinned to major versions the pipeline was developed on;
+# the code uses pandas 3.x APIs (DataFrame.map, resample("ME"), no chained assignment).
+
+pandas>=3.0,<4.0
+numpy>=2.0,<3.0
+statsmodels>=0.14,<0.15
+scipy>=1.13
+matplotlib>=3.8
+openpyxl>=3.1          # Excel monitor writer
+XlsxWriter>=3.2        # alternate Excel engine
+requests>=2.31         # FRED / ALFRED / CFTC / Cboe ingestion
+tabulate>=0.9          # DataFrame.to_markdown in the research report
+
+# Testing
+pytest>=8.0
+
+# Notebooks (only needed to regenerate notebooks/ via tools/build_notebooks.py)
+nbformat>=5.10
+nbclient>=0.10
+ipykernel>=6.29
