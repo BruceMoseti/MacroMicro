@@ -1,11 +1,11 @@
-question,answer
+figure,value
 1. Datasets,5: FRED daily market series; ALFRED vintage macroeconomic series; CFTC Traders in Financial Futures (COT); CFTC Disaggregated Futures (COT); Cboe VIX history
 2. Instruments and series,"13 daily market series, 5 vintage macro series, 5 CFTC positioning markets = 23 total; 164 engineered features"
 3. Daily observations,"2,512 trading days; 32,656 daily series-observations; 522 weekly COT reports; 1,833 macro vintage rows"
 4. Start and end date,"2016-08-15 to 2026-08-13 (frozen). Train to 2022-12-31, validation to 2024-12-31, test from 2025-01-01"
 5. Candidate signals tested,"14 declared in signals.SIGNAL_REGISTRY, of which 13 were backtested; 3 regression specifications; 5 relative-value pairs; 5 positioning markets"
 6. Actual trades,"1,596 across all backtested signals, full sample, at 2bp"
-7. Best out-of-sample Sharpe,"1.80 (h2_rv_gold_real10_hedged, 404 days, 21 trades, 2bp costs). Say the next sentence unprompted: 0 of 13 strategies were positive in all three splits, so this number is almost certainly noise, not an edge"
+7. Best out-of-sample Sharpe,"1.80 (h2_rv_gold_real10_hedged, 404 days, 21 trades, 2bp costs). This figure should not be read in isolation: 0 of 13 strategies were positive in all three splits, so it is almost certainly noise rather than an edge"
 8. Maximum drawdown,-4.4% for the primary strategy out of sample; -69.3% worst across all signals (full sample)
 9. Hit rate,"53.4% for the primary strategy out of sample, over 118 days holding risk"
 10. Average holding period,5.7 trading days out of sample; 12.7 days on average across signals

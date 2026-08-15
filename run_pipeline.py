@@ -5,7 +5,7 @@
     python run_pipeline.py --source fred      # live FRED / ALFRED / CFTC / Cboe download
 
 Writes data/processed, outputs/charts, outputs/tables, outputs/macro_market_monitor.xlsx,
-docs/RESEARCH_REPORT.md and docs/INTERVIEW_SHEET.md. Exits non-zero if any critical
+docs/RESEARCH_REPORT.md and docs/KEY_FIGURES.md. Exits non-zero if any critical
 validation check fails.
 """
 

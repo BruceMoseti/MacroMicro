@@ -1,4 +1,4 @@
-"""Reporting: Excel monitor, CSV tables, research report and interview sheet.
+"""Reporting: Excel monitor, CSV tables, research report and key figures sheet.
 
 The Excel workbook is the deliverable a non-quant reads. Every sheet carries the data
 provenance and the last observation date of every input, so a stale series cannot be
@@ -261,7 +261,7 @@ def data_dictionary() -> pd.DataFrame:
 
 
 # --------------------------------------------------------------------------------------
-# Interview numbers
+# Key figures
 # --------------------------------------------------------------------------------------
 def _interpret(coefficient_row: pd.Series) -> str:
     """Plain-English reading of one H1 coefficient, in the units of its own regressor."""
@@ -281,8 +281,8 @@ def _interpret(coefficient_row: pd.Series) -> str:
     return f"Interpretation depends on the units of {term}."
 
 
-def interview_numbers(results: dict) -> pd.DataFrame:
-    """The twenty numbers that must be answerable from memory."""
+def key_figures(results: dict) -> pd.DataFrame:
+    """The project's twenty headline figures, each traceable to a generated table."""
     panel = results["panel"]
     headline = results["backtest_headline"]
     test = headline[headline["split"] == "test"].sort_values("sharpe", ascending=False)
@@ -340,10 +340,10 @@ def interview_numbers(results: dict) -> pd.DataFrame:
         (
             "7. Best out-of-sample Sharpe",
             f"{best['sharpe']:.2f} ({best['signal']}, {int(best['nobs'])} days, {int(best['trades'])} trades, "
-            f"{config.HEADLINE_COST_BPS:.0f}bp costs). Say the next sentence unprompted: "
+            f"{config.HEADLINE_COST_BPS:.0f}bp costs). This figure should not be read in isolation: "
             f"{int(results['backtest_consistency']['positive_in_all_splits'].sum())} of "
-            f"{len(results['backtest_consistency'])} strategies were positive in all three splits, so this "
-            f"number is almost certainly noise, not an edge"
+            f"{len(results['backtest_consistency'])} strategies were positive in all three splits, so it is "
+            f"almost certainly noise rather than an edge"
             if best is not None
             else "n/a",
         ),
@@ -426,7 +426,7 @@ def interview_numbers(results: dict) -> pd.DataFrame:
             "changing the last 40 rows of input leaves all earlier features and signals bit-identical.",
         ),
     ]
-    return pd.DataFrame(rows, columns=["question", "answer"])
+    return pd.DataFrame(rows, columns=["figure", "value"])
 
 
 # --------------------------------------------------------------------------------------
@@ -451,7 +451,7 @@ TABLE_KEYS = (
     "regime_summary",
     "holm",
     "validation",
-    "interview_numbers",
+    "key_figures",
 )
 
 
@@ -509,7 +509,7 @@ def write_excel_monitor(results: dict) -> None:
         "Regime Summary": results["regime_summary"],
         "Multiple Testing": results["holm"],
         "Validation Log": results["validation"],
-        "Interview Numbers": results["interview_numbers"],
+        "Key Figures": results["key_figures"],
         "Data Dictionary": data_dictionary(),
         "Chart Manifest": results.get("chart_manifest", pd.DataFrame()),
     }
@@ -546,20 +546,24 @@ def _style_workbook(writer, sheets: dict[str, pd.DataFrame]) -> None:
                     sheet.cell(row=row, column=index).font = Font(bold=True, color="FFFFFF")
 
 
-def write_interview_sheet(results: dict) -> None:
-    numbers = results["interview_numbers"]
+def write_key_figures(results: dict) -> None:
+    numbers = results["key_figures"]
     provenance = results["dataset"].provenance()
     lines = [
-        "# Numbers I must know",
+        "# Key figures",
         "",
-        f"Generated from `outputs/tables/interview_numbers.csv`. Data source: **{provenance['source']}**"
+        "A single-page reference for the project's headline numbers. Every value is generated "
+        "from the tables in `outputs/tables/` rather than written by hand, so this sheet cannot "
+        "fall out of step with the results.",
+        "",
+        f"Source table: `outputs/tables/key_figures.csv`. Data source: **{provenance['source']}**"
         + ("  \n**These figures come from the synthetic dataset and are not market history.**" if provenance["is_synthetic"] else ""),
         "",
     ]
     for row in numbers.itertuples():
-        lines.append(f"**{row.question}**  \n{row.answer}")
+        lines.append(f"**{row.figure}**  \n{row.value}")
         lines.append("")
-    (config.DOCS_DIR / "INTERVIEW_SHEET.md").write_text("\n".join(lines))
+    (config.DOCS_DIR / "KEY_FIGURES.md").write_text("\n".join(lines))
 
 
 def write_research_report(results: dict) -> None:

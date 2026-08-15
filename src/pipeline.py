@@ -222,13 +222,13 @@ def run(source: str = config.SOURCE_SYNTHETIC, write_outputs: bool = True) -> di
 
     results["validation"] = log.frame()
     results["validation_log"] = log
-    results["interview_numbers"] = reporting.interview_numbers(results)
+    results["key_figures"] = reporting.key_figures(results)
 
     if write_outputs:
         reporting.write_tables(results)
         reporting.write_excel_monitor(results)
         reporting.write_research_report(results)
-        reporting.write_interview_sheet(results)
+        reporting.write_key_figures(results)
         panel.to_csv(config.DATA_PROCESSED / "daily_panel.csv")
         feature_frame.to_csv(config.DATA_PROCESSED / "features.csv")
         regime_frame.to_csv(config.DATA_PROCESSED / "regimes.csv")

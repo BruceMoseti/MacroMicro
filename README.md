@@ -27,7 +27,7 @@ and reported honestly — including the two that did not work.
 | **Correctness** | 96 automated tests · 55 data-integrity and leakage checks · pipeline exits non-zero on any critical failure |
 | **Reproducibility** | A fresh clone regenerates every result in 18 seconds, verified in CI against the committed values to a numerical tolerance |
 | **Domain bugs caught** | 8 documented failure modes that a naive implementation would ship silently (see below) |
-| **Skills demonstrated** | Data engineering · time series statistics · testing & validation design · financial domain knowledge · technical writing |
+| **Research scope** | 3 pre-registered hypotheses · 14 declared candidate signals · 13 backtested · results reported whether or not they worked |
 
 ![Cross-asset overview](outputs/charts/01_cross_asset_overview.png)
 
@@ -91,7 +91,7 @@ FRED · ALFRED · CFTC · Cboe          5 datasets across 4 external APIs
                            v
                       backtester        one timing rule · cost grid · vol targeting
                            v
-        Excel monitor · 17 charts · research report · interview sheet
+        Excel monitor · 17 charts · research report · key figures
 ```
 
 | Module | Lines | Responsibility |
@@ -119,6 +119,9 @@ FRED · ALFRED · CFTC · Cboe          5 datasets across 4 external APIs
   traced back to the bytes that produced it — the same requirement a regulated firm has.
 - **The report writes itself.** Every number in the 13-section research report is read from the
   computed tables rather than typed in, so the prose cannot drift out of sync with the results.
+- **Time alignment is the hard part.** Three data frequencies, two publication delays and one
+  revision history all have to agree about what was known when. Most of the validation layer
+  exists to enforce that agreement.
 - **Failures are loud.** The pipeline returns a non-zero exit code if any critical check fails,
   so it is wired straight into CI: `.github/workflows/ci.yml` runs lint, the tests, the full
   pipeline, and a reproducibility assertion on every push.
@@ -249,7 +252,7 @@ outputs/
   macro_market_monitor.xlsx    26-sheet cross-asset monitor
 docs/
   RESEARCH_REPORT.md   the full 13-section write-up
-  INTERVIEW_SHEET.md   twenty key figures, generated from the data rather than typed
+  KEY_FIGURES.md       the twenty headline numbers, generated from the data rather than typed
   DATA_SOURCES.md      every endpoint, identifier and known data problem
 ```
 
@@ -293,85 +296,3 @@ the report makes that distinction explicitly.
 
 Known limitations are collected in section 12 of the research report — including the ones that
 weaken the conclusions.
-
----
-
-## The same project, three ways
-
-**For a software engineer.** A Python pipeline ingesting daily, weekly and monthly data from
-four APIs. Calendars and units are normalised, two incompatible report schemas are mapped
-to one internal shape, the raw layer is immutable, feature and backtesting modules are reusable,
-and 55 automated checks cover missing data, duplicate and future timestamps, non-positive
-prices, cross-table identities, and timestamp leakage. Output is deterministic, and CI asserts
-that a clean run reproduces every committed number to a stated numerical tolerance rather than
-byte-wise, because BLAS reduction order is not portable across machines. The interesting
-engineering problem was time alignment: three data frequencies,
-two publication delays and one revision history, all of which have to agree about what was known
-when.
-
-**For a quantitative researcher.** The goal was to test whether cross-asset macro variables
-carry explanatory or predictive information, not to assume a strategy exists. Prices become log
-returns and yields basis point changes; the equity regression uses Newey-West errors after
-Breusch-Pagan and Ljung-Box reject the classical assumptions, in a level/slope parameterisation
-because the textbook specification is rank deficient. Relative-value residuals use trailing
-hedge ratios, tested with ADF and Engle-Granger and characterised by AR(1) half-life before any
-holding horizon was chosen. The train/validation/test split was fixed in advance, positioning is
-lagged to its actual release, macro data is vintage-selected, and the full candidate family is
-declared so the Holm-Bonferroni correction covers it rather than the survivors.
-
-**For a recruiter.** A quantitative research platform covering interest rates, currencies,
-equities, commodities, volatility and derivatives positioning. It uses ten years of data to study
-how these markets interact, builds models to spot unusual relationships between them, tests those
-ideas against history, and produces an Excel dashboard summarising current conditions and
-results. The engineering emphasis is on getting it *right*: 96 tests and 55 data checks exist
-because in finance a wrong number looks exactly like a right one.
-
----
-
-## Resume lines
-
-Two categories, and the difference matters. **Engineering figures describe the codebase**, so
-they are true regardless of which dataset the pipeline is pointed at. **Research figures describe
-results**, so they belong to the dataset that produced them — and the committed results come from
-the simulated dataset described above.
-
-### Ready to use
-
-Every number here is a property of the software and is verified by CI on each run.
-
-> **Macro Markets Quantitative Research Platform** | Python, pandas, NumPy, statsmodels, Excel, Time Series Analysis
->
-> - Built a **5,100-line, 16-module** quantitative research pipeline ingesting **5 datasets
->   across 4 APIs** at three frequencies into **164 engineered features** over **2,512 trading
->   days** of rates, FX, equity, commodity, volatility and derivatives-positioning data, with
->   **deterministic output verified in CI** against committed results to a stated numerical
->   tolerance.
-> - Engineered **55 automated data-integrity and leakage checks**, including a perturbation test
->   that proves no calculation uses future information, plus publication-aware alignment of
->   weekly derivatives-positioning reports to their actual release time and point-in-time
->   economic data vintages to eliminate look-ahead bias; backed by **96 unit tests**, including
->   tests of the validation layer itself.
-> - Implemented a **backtesting engine** with a single enforced timing rule, volatility-target
->   position sizing, financing and transaction-cost modelling, and pre-registered
->   train/validation/test splits, alongside **autocorrelation-robust regression** with
->   rank and collinearity diagnostics, stationarity and cointegration testing, and
->   Holm-Bonferroni correction across a declared candidate-signal family.
-> - Delivered a **26-sheet automated Excel monitor**, 17 charts and a 13-section research report
->   generated directly from computed results, tracking yield curves, rolling correlations,
->   positioning percentiles, regime classifications and strategy performance.
-
-### Regenerate before quoting
-
-These are findings, not features. Run `python run_pipeline.py --source fred` on a networked
-machine, then take the values it prints. The bracketed figures are what the **simulated** dataset
-produced and must not be presented as market results.
-
-> - Tested **3 pre-registered hypotheses** across **13 backtested strategies**, finding that
->   [*no strategy was profitable across all three evaluation periods*] and [*no strategy survived
->   multiple-testing correction*], while the contemporaneous rates-equity relationship held at
->   [*44% explanatory power*] with [*negative predictive power*] once regressors were lagged by
->   one day.
-
-The second block is the one worth talking about in an interview. Anyone can report a strategy that
-worked; being able to show *why* an attractive-looking result was not real — and having built the
-checks that establish it — is the harder and more valuable skill.

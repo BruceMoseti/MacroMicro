@@ -1,6 +1,8 @@
-# Numbers I must know
+# Key figures
 
-Generated from `outputs/tables/interview_numbers.csv`. Data source: **SYNTHETIC**  
+A single-page reference for the project's headline numbers. Every value is generated from the tables in `outputs/tables/` rather than written by hand, so this sheet cannot fall out of step with the results.
+
+Source table: `outputs/tables/key_figures.csv`. Data source: **SYNTHETIC**  
 **These figures come from the synthetic dataset and are not market history.**
 
 **1. Datasets**  
@@ -22,7 +24,7 @@ Generated from `outputs/tables/interview_numbers.csv`. Data source: **SYNTHETIC*
 1,596 across all backtested signals, full sample, at 2bp
 
 **7. Best out-of-sample Sharpe**  
-1.80 (h2_rv_gold_real10_hedged, 404 days, 21 trades, 2bp costs). Say the next sentence unprompted: 0 of 13 strategies were positive in all three splits, so this number is almost certainly noise, not an edge
+1.80 (h2_rv_gold_real10_hedged, 404 days, 21 trades, 2bp costs). This figure should not be read in isolation: 0 of 13 strategies were positive in all three splits, so it is almost certainly noise rather than an edge
 
 **8. Maximum drawdown**  
 -4.4% for the primary strategy out of sample; -69.3% worst across all signals (full sample)

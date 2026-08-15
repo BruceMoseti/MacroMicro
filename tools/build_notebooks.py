@@ -647,13 +647,13 @@ NOTEBOOKS: dict[str, list[tuple[str, str]]] = {
         ),
         (
             "md",
-            "## Numbers I must know\n\n"
+            "## Key figures\n\n"
             "Generated from the tables above, not typed in.",
         ),
         (
             "code",
-            'for row in results["interview_numbers"].itertuples():\n'
-            '    print(f"{row.question}\\n    {row.answer}\\n")',
+            'for row in results["key_figures"].itertuples():\n'
+            '    print(f"{row.figure}\\n    {row.value}\\n")',
         ),
     ],
 }
