@@ -23,7 +23,7 @@ and reported honestly — including the two that did not work.
 | **What it does** | Ingests 5 datasets across 4 APIs, engineers 164 features, runs 3 research hypotheses, backtests 13 strategies, and publishes a 26-sheet Excel monitor, 17 charts and a 13-section research report |
 | **Scale** | 5,086 lines of Python across 16 modules · 2,512 trading days · 23 market, macro and positioning series |
 | **Correctness** | 84 automated tests · 55 data-integrity and leakage checks · pipeline exits non-zero on any critical failure |
-| **Reproducibility** | A fresh clone regenerates every chart, table and document **byte-for-byte** in 18 seconds |
+| **Reproducibility** | A fresh clone regenerates every result in 18 seconds, verified in CI against the committed values to a numerical tolerance |
 | **Domain bugs caught** | 8 documented failure modes that a naive implementation would ship silently (see below) |
 | **Skills demonstrated** | Data engineering · time series statistics · testing & validation design · financial domain knowledge · technical writing |
 
@@ -33,10 +33,10 @@ and reported honestly — including the two that did not work.
 
 ## Why this is harder than it looks
 
-A cross-asset research pipeline is a good interview project precisely because it is full of
-traps that do not announce themselves. Below are eight real ones this system handles. Each was
-a decision I had to make, and each one is the kind of thing that separates working financial
-software from software that merely runs.
+A cross-asset research pipeline is deceptively difficult, because it is full of traps that do
+not announce themselves. Below are eight real ones this system handles. Each was a decision I
+had to make, and each is the kind of thing that separates working financial software from
+software that merely runs.
 
 | The trap | What happens if you miss it | How it's handled |
 |---|---|---|
@@ -118,7 +118,16 @@ FRED · ALFRED · CFTC · Cboe          5 datasets across 4 external APIs
 - **The report writes itself.** Every number in the 13-section research report is read from the
   computed tables rather than typed in, so the prose cannot drift out of sync with the results.
 - **Failures are loud.** The pipeline returns a non-zero exit code if any critical check fails,
-  so it can be wired into CI as-is.
+  so it is wired straight into CI: `.github/workflows/ci.yml` runs lint, the tests, the full
+  pipeline, and a reproducibility assertion on every push.
+- **Reproducibility is verified numerically, not byte-wise.** Within one environment the output
+  is bit-identical. Across environments it is not, and that is expected rather than a defect:
+  regression coefficients and matrix inversions go through BLAS, whose reduction order depends
+  on the library build and the CPU, so two correct runs can differ in a float's last bits.
+  `tools/check_reproducibility.py` therefore compares every number against the committed value
+  within a tolerance and prints the largest difference it found, so genuine drift is visible
+  instead of being absorbed. I found this out the honest way — the first CI run failed a
+  byte-comparison, which was the wrong check rather than a broken pipeline.
 
 ---
 
@@ -291,8 +300,10 @@ weaken the conclusions.
 four APIs. Calendars and units are normalised, two incompatible report schemas are mapped
 to one internal shape, the raw layer is immutable, feature and backtesting modules are reusable,
 and 55 automated checks cover missing data, duplicate and future timestamps, non-positive
-prices, cross-table identities, and timestamp leakage. Output is deterministic and byte-for-byte
-reproducible. The interesting engineering problem was time alignment: three data frequencies,
+prices, cross-table identities, and timestamp leakage. Output is deterministic, and CI asserts
+that a clean run reproduces every committed number to a stated numerical tolerance rather than
+byte-wise, because BLAS reduction order is not portable across machines. The interesting
+engineering problem was time alignment: three data frequencies,
 two publication delays and one revision history, all of which have to agree about what was known
 when.
 
@@ -325,8 +336,8 @@ and the pipeline prints its own.
 >
 > - Built a **5,000-line, 16-module** research pipeline ingesting **5 datasets across 4 APIs** at
 >   three frequencies into **164 engineered features** over **2,512 trading days** of rates, FX,
->   equity, commodity, volatility and derivatives-positioning data, with deterministic,
->   **byte-for-byte reproducible** output.
+>   equity, commodity, volatility and derivatives-positioning data, with **deterministic output
+>   verified in CI** against committed results to a stated numerical tolerance.
 > - Engineered **55 automated data-integrity and leakage checks**, including a perturbation test
 >   that proves no calculation uses future information, plus publication-aware alignment of
 >   weekly positioning data and point-in-time economic vintages to eliminate look-ahead bias;
