@@ -239,8 +239,8 @@ def holm_bonferroni(p_values: pd.Series) -> pd.DataFrame:
     """Holm-Bonferroni step-down adjustment over the project's headline tests.
 
     Three hypotheses tested with a handful of specifications each is a small family, but
-    it is not one test, and the adjustment belongs in the write-up rather than in a
-    reviewer's question.
+    it is not one test. Reporting the minimum unadjusted p-value across the family would
+    overstate significance by roughly the size of the family.
     """
     ordered = p_values.dropna().sort_values()
     n = len(ordered)

@@ -1,20 +1,25 @@
 # Macro Markets Quantitative Research Platform
 
-**A production-style research system for cross-asset macro and relative value.**
+**Cross-asset macro research, relative value and derivatives positioning.**
 Python · pandas · NumPy · statsmodels · Excel · time series analysis
 
 [![CI](https://github.com/BruceMoseti/MacroMicro/actions/workflows/ci.yml/badge.svg)](https://github.com/BruceMoseti/MacroMicro/actions/workflows/ci.yml)
 
-Financial firms run on a specific kind of software: pipelines that pull messy market data
-from several providers, reshape it correctly, and feed models whose answers move money. When
-that software is subtly wrong, the model does not crash — it produces a confident, plausible,
-wrong number. This project is a complete example of that kind of system, built to catch its
-own mistakes.
+A research platform for studying how interest rates, currencies, equities, commodities,
+volatility and derivatives positioning move together, and whether those relationships carry
+information worth acting on.
 
-It asks one question: **can interest rates, currencies, volatility, commodities, economic data
-and derivatives positioning explain how markets move together, and can that be turned into a
-usable signal?** Three ideas were written down in advance, tested against ten years of data,
-and reported honestly — including the two that did not work.
+The central question: **can cross-asset macro variables explain market behaviour, identify
+relative value dislocations, and improve short-term signals?** Three hypotheses were specified
+in advance, tested against ten years of data, and reported as they came out — including the two
+that did not work.
+
+Most of the engineering exists because of one property of this kind of data work: when the code
+is subtly wrong it does not crash, it returns a confident and plausible wrong number. A
+misaligned timestamp, or a full-sample average used inside a trailing calculation, produces a
+backtest that looks excellent and means nothing. So the pipeline is built to fail loudly — 55
+data-integrity and leakage checks run on every execution, and the run aborts if a critical one
+fails.
 
 ---
 
@@ -26,19 +31,17 @@ and reported honestly — including the two that did not work.
 | **Scale** | 5,107 lines of Python across 16 modules · 2,512 trading days · 23 market, macro and positioning series |
 | **Correctness** | 96 automated tests · 55 data-integrity and leakage checks · pipeline exits non-zero on any critical failure |
 | **Reproducibility** | A fresh clone regenerates every result in 18 seconds, verified in CI against the committed values to a numerical tolerance |
-| **Domain bugs caught** | 8 documented failure modes that a naive implementation would ship silently (see below) |
+| **Failure modes handled** | 8 documented data and methodology traps that produce plausible wrong output if missed |
 | **Research scope** | 3 pre-registered hypotheses · 14 declared candidate signals · 13 backtested · results reported whether or not they worked |
 
 ![Cross-asset overview](outputs/charts/01_cross_asset_overview.png)
 
 ---
 
-## Why this is harder than it looks
+## Where this kind of pipeline goes wrong
 
-A cross-asset research pipeline is deceptively difficult, because it is full of traps that do
-not announce themselves. Below are eight real ones this system handles. Each was a decision I
-had to make, and each is the kind of thing that separates working financial software from
-software that merely runs.
+Cross-asset data is full of traps that do not announce themselves, and most of them produce
+plausible output rather than an error. Eight that this pipeline handles explicitly:
 
 | The trap | What happens if you miss it | How it's handled |
 |---|---|---|
@@ -131,14 +134,14 @@ FRED · ALFRED · CFTC · Cboe          5 datasets across 4 external APIs
   on the library build and the CPU, so two correct runs can differ in a float's last bits.
   `tools/check_reproducibility.py` therefore compares every number against the committed value
   within a tolerance and prints the largest difference it found, so genuine drift is visible
-  instead of being absorbed. I found this out the honest way — the first CI run failed a
-  byte-comparison, which was the wrong check rather than a broken pipeline.
+  instead of being absorbed. The first CI run failed a byte comparison, which turned out to be
+  the wrong check rather than a broken pipeline.
 
 ---
 
 ## What the research found
 
-Three hypotheses, fixed in advance. One worked partially, two did not — and the write-up says so.
+Three hypotheses, fixed in advance. One held partially, two did not.
 
 | | Question | Answer |
 |---|---|---|
@@ -156,8 +159,9 @@ And the finding that governs everything else:
 > strategy that *lost* money in the training period, which is the signature of noise rather
 > than skill.
 
-Being able to state that clearly is the point. A project that reports what failed is a project
-whose successes can be believed.
+That last figure is why the strategy results are presented as a negative finding rather than a
+performance record. A signal that is profitable only in the period it was never fitted to, and
+loses money in the period it was, is describing sampling variation.
 
 ### The most instructive result
 
@@ -269,9 +273,10 @@ embarrassing class of error.
 
 ---
 
-## Methodology decisions
+## Scope and constraints
 
-Choices a technical reviewer will want stated rather than inferred.
+Each choice below limits how far the results can be pushed, so they sit next to the findings
+rather than in a footnote.
 
 **There are no futures prices.** No Bloomberg, Refinitiv or exchange settlement data was
 available, so no continuous futures contracts are constructed and none are claimed. The accurate
