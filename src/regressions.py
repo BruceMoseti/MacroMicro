@@ -75,13 +75,23 @@ def fit_ols(
             }
         ).reset_index(drop=True)
 
+        # Rank is measured on the regressor block excluding the intercept, because that is
+        # what collinearity is about and it is the quantity statsmodels warns on.
+        #
+        # For a rank-deficient design the condition number and the variance inflation
+        # factors are infinite, not merely large: the correlation matrix has no inverse.
+        # Reporting whatever a floating-point inversion happens to return would be
+        # reporting rounding error, and those values are not reproducible across BLAS
+        # builds — continuous integration caught exactly that. The rank is exact and
+        # portable, so it is the number that gets reported.
         exog = X.drop(columns="const")
-        # Variance inflation factors from the inverse correlation matrix; a singular
-        # design matrix is reported as infinite rather than raising.
-        try:
-            vif = pd.Series(np.diag(np.linalg.inv(exog.corr().to_numpy())), index=exog.columns)
-        except np.linalg.LinAlgError:
-            vif = pd.Series(np.inf, index=exog.columns)
+        regressor_rank = int(np.linalg.matrix_rank(exog.to_numpy()))
+        rank_deficient = regressor_rank < exog.shape[1]
+        if rank_deficient:
+            condition_number = max_vif = float("inf")
+        else:
+            condition_number = float(np.linalg.cond(X.to_numpy()))
+            max_vif = float(np.diag(np.linalg.inv(exog.corr().to_numpy())).max())
 
         residuals = model.resid
         diagnostics = {
@@ -91,14 +101,16 @@ def fit_ols(
             "adj_r_squared": float(model.rsquared_adj),
             "f_pvalue": float(model.f_pvalue),
             "hac_lags": lags,
-            "condition_number": float(np.linalg.cond(X.to_numpy())),
-            "max_vif": float(vif.max()),
+            "n_regressors": int(exog.shape[1]),
+            "regressor_rank": regressor_rank,
+            "condition_number": condition_number,
+            "max_vif": max_vif,
             "durbin_watson": float(durbin_watson(residuals)),
             "breusch_pagan_p": float(het_breuschpagan(residuals, X)[1]),
             "ljung_box_p_10": float(acorr_ljungbox(residuals, lags=[10], return_df=True)["lb_pvalue"].iloc[0]),
             "residual_skew": float(pd.Series(residuals).skew()),
             "residual_kurtosis": float(pd.Series(residuals).kurtosis()),
-            "rank_deficient": bool(np.linalg.matrix_rank(X.to_numpy()) < X.shape[1]),
+            "rank_deficient": rank_deficient,
             "fit_warnings": "; ".join(sorted({str(w.message).split(".")[0] for w in caught})),
         }
     return coefficients, diagnostics

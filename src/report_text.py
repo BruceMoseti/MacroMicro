@@ -245,12 +245,21 @@ The regression as normally written down is
 r_SPX = a + b1 dy2 + b2 dy10 + b3 dCurve + b4 dVIX + e
 
 and it cannot be estimated, because dCurve = dy10 - dy2 by construction. It is included here
-anyway, because the failure is instructive: its condition number is
-{diagnostics.loc['naive', 'condition_number']:.2e} and its maximum variance inflation factor
-{diagnostics.loc['naive', 'max_vif']:.2e}. The fit is identical to the identified version
-(R-squared {_num(diagnostics.loc['naive', 'r_squared'], 4)} against
+anyway, because the failure is instructive: it has
+{int(diagnostics.loc['naive', 'n_regressors'])} regressors spanning only
+{int(diagnostics.loc['naive', 'regressor_rank'])} dimensions, so its condition number and
+variance inflation factors are infinite rather than merely large, and there is no unique
+solution. The fit is identical to
+the identified version (R-squared {_num(diagnostics.loc['naive', 'r_squared'], 4)} against
 {_num(diagnostics.loc['slope', 'r_squared'], 4)}) because the two span the same space, but the
 individual coefficients are not identified and must not be interpreted.
+
+A footnote on that, because it caught me out. The first version of this code reported whatever
+`numpy` returned for the condition number of the singular matrix, around 1.9e15. That number is
+rounding error, not a measurement, and it differed on another machine: continuous integration
+flagged it when the same run produced 1.8e15 for the condition number and 1.01 rather than
+6.6e15 for the maximum variance inflation factor. The rank is exact and portable, so it is what
+gets reported.
 
 Two identified specifications are used instead. `slope` replaces the three collinear rate
 terms with a level factor (y2 + y10)/2 and a slope factor y10 - y2. `real` goes further and

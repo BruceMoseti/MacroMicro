@@ -70,10 +70,18 @@ def test_curve_inverts_and_steepens(panel):
 # Hypothesis 1
 # --------------------------------------------------------------------------------------
 def test_naive_specification_is_rank_deficient(feature_frame):
-    """dCurve = dy10 - dy2 exactly, so the textbook specification is not identified."""
+    """dCurve = dy10 - dy2 exactly, so the textbook specification is not identified.
+
+    The reported condition number must be exactly infinite rather than a large finite
+    number: a finite value there is floating-point rounding error, and it does not
+    reproduce across BLAS builds.
+    """
     _, diagnostics = regressions.fit_ols(feature_frame, regressions.SPECIFICATIONS["naive"], label="naive")
     assert diagnostics["rank_deficient"]
-    assert diagnostics["condition_number"] > 1e8
+    assert diagnostics["n_regressors"] == 4
+    assert diagnostics["regressor_rank"] == 3
+    assert diagnostics["condition_number"] == np.inf
+    assert diagnostics["max_vif"] == np.inf
     assert diagnostics["fit_warnings"], "statsmodels should warn about the singular design"
 
 
@@ -81,6 +89,7 @@ def test_identified_specifications_are_well_conditioned(feature_frame):
     for name in ("slope", "real"):
         _, diagnostics = regressions.fit_ols(feature_frame, regressions.SPECIFICATIONS[name], label=name)
         assert not diagnostics["rank_deficient"]
+        assert diagnostics["regressor_rank"] == diagnostics["n_regressors"]
         assert diagnostics["condition_number"] < 1e3
         assert diagnostics["max_vif"] < 10.0
 
