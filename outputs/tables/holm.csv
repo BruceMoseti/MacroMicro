@@ -1,0 +1,23 @@
+test,p_value,p_holm,significant_5pct,family_size
+H1 ret_1d_vix,2.697087043175205e-48,5.933591494985451e-47,True,22
+H1 dy_1d_real10,2.3187868553620523e-18,4.86945239626031e-17,True,22
+H1 dy_1d_slope,1.932774478866235e-06,3.86554895773247e-05,True,22
+H1 dy_1d_breakeven10,0.007530468009775142,0.1430788921857277,False,22
+H2/H3 h2_rv_gold_real10_hedged OOS Sharpe,0.022973548623646423,0.4135238752256356,False,22
+H2/H3 h1_equity_forecast OOS Sharpe,0.28709105097889465,1.0,False,22
+H2/H3 h2_rv_breakeven_wti_hedged OOS Sharpe,0.3114085753929916,1.0,False,22
+H2/H3 h3_positioning_cl OOS Sharpe,0.31684580282990993,1.0,False,22
+H3 cl top-vs-bottom decile 21d,0.377508825485803,1.0,False,22
+H2/H3 h2_rv_gold_real10_single OOS Sharpe,0.5133452100467475,1.0,False,22
+H2/H3 h2_rv_spx_vix_hedged OOS Sharpe,0.5730328981872015,1.0,False,22
+H2/H3 h3_positioning_6e OOS Sharpe,0.5769486320090569,1.0,False,22
+H2/H3 h3_positioning_es OOS Sharpe,0.6401663222326608,1.0,False,22
+H2/H3 h2_rv_wti_usd_hedged OOS Sharpe,0.6853158972488977,1.0,False,22
+H2/H3 h3_positioning_zn OOS Sharpe,0.7245422966051094,1.0,False,22
+H3 zn top-vs-bottom decile 21d,0.7555015757877397,1.0,False,22
+H2/H3 h3_positioning_gc OOS Sharpe,0.8122930162249706,1.0,False,22
+H2/H3 h2_rv_wti_usd_single OOS Sharpe,0.817967565828772,1.0,False,22
+H2/H3 h2_rv_spx_vix_single OOS Sharpe,0.8989440826970858,1.0,False,22
+H3 6e top-vs-bottom decile 21d,0.9319938662751843,1.0,False,22
+H3 es top-vs-bottom decile 21d,0.9503004752554725,1.0,False,22
+H3 gc top-vs-bottom decile 21d,0.9744906420974373,1.0,False,22

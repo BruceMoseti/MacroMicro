@@ -1,0 +1,15 @@
+signal,hypothesis,return_series,backtested,description
+h1_equity_forecast,H1 rates and equity risk,ret_1d_spx,True,"Sign of a walk-forward one-day-ahead S&P 500 forecast from lagged real yield, breakeven, curve slope and VIX changes."
+h2_rv_gold_real10_hedged,H2 cross-asset relative value,hedged_gold_real10,True,"Fade the rolling-beta residual of gold on real10 at |z| > 2.0, exit at |z| < 0.5. Traded as the beta-hedged spread."
+h2_rv_gold_real10_single,H2 cross-asset relative value,ret_1d_gold,True,"Fade the rolling-beta residual of gold on real10 at |z| > 2.0, exit at |z| < 0.5. Traded as an outright position in gold only."
+h2_rv_wti_usd_hedged,H2 cross-asset relative value,hedged_wti_usd,True,"Fade the rolling-beta residual of wti on usd at |z| > 2.0, exit at |z| < 0.5. Traded as the beta-hedged spread."
+h2_rv_wti_usd_single,H2 cross-asset relative value,ret_1d_wti,True,"Fade the rolling-beta residual of wti on usd at |z| > 2.0, exit at |z| < 0.5. Traded as an outright position in wti only."
+h2_rv_breakeven_wti_hedged,H2 cross-asset relative value,hedged_breakeven_wti,True,"Fade the rolling-beta residual of breakeven10 on wti at |z| > 2.0, exit at |z| < 0.5. Traded as the beta-hedged spread."
+h2_rv_spx_vix_hedged,H2 cross-asset relative value,hedged_spx_vix,True,"Fade the rolling-beta residual of spx on vix at |z| > 2.0, exit at |z| < 0.5. Traded as the beta-hedged spread."
+h2_rv_spx_vix_single,H2 cross-asset relative value,ret_1d_spx,True,"Fade the rolling-beta residual of spx on vix at |z| > 2.0, exit at |z| < 0.5. Traded as an outright position in spx only."
+h2_rv_curve_hyoas,H2 cross-asset relative value,curve_2s10s,False,"Fade the rolling-beta residual of curve_2s10s on hy_oas at |z| > 2.0, exit at |z| < 0.5. Analysed only: Trading the curve leg requires a duration-weighted 2s10s steepener, whose P&L is not a single-duration transform of the spread. The pair is analysed but cannot be converted into one return series, so it is not backtested."
+h3_positioning_es,H3 futures positioning,spx,True,Fade leveraged funds crowding in E-mini S&P 500 at |3y z| > 1.5.
+h3_positioning_zn,H3 futures positioning,zn_proxy,True,Fade leveraged funds crowding in 10y Treasury note at |3y z| > 1.5.
+h3_positioning_6e,H3 futures positioning,usd_short_proxy,True,Fade leveraged funds crowding in Euro FX at |3y z| > 1.5.
+h3_positioning_cl,H3 futures positioning,wti,True,Fade managed money crowding in WTI crude oil at |3y z| > 1.5.
+h3_positioning_gc,H3 futures positioning,gold,True,Fade managed money crowding in Gold at |3y z| > 1.5.

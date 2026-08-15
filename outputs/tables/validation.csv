@@ -1,0 +1,56 @@
+check,result,severity,detail
+daily.no_duplicate_timestamps,PASS,critical,0 duplicated dates in 2512 rows
+daily.monotonic_index,PASS,critical,index sorted ascending
+daily.no_future_dates,PASS,critical,max date 2026-08-13 vs frozen end 2026-08-13
+daily.window_matches_frozen_period,PASS,critical,"2016-08-15 to 2026-08-13, 2512 observations"
+daily.calendar_alignment,PASS,advisory,"0 expected trading days absent, 0 dates outside the NYSE calendar"
+daily.positive_prices,PASS,critical,"all 6 price series strictly positive (WTI printed negative on 2020-04-20 in FRED's DCOILWTICO, which would fail this check)"
+daily.missing_data_documented,PASS,advisory,no missing observations
+daily.curve_identity,PASS,advisory,2s10s spans -144bp to 140bp; inverted on 358 of 2512 days
+anchors.spx,PASS,critical,"7,798.9900 vs expected 7,798.9900 (tolerance 0.01) [synthetic panel pinned to the anchors]"
+anchors.dgs2,PASS,critical,4.1500 vs expected 4.1500 (tolerance 0.005) [synthetic panel pinned to the anchors]
+anchors.dgs10,PASS,critical,4.6300 vs expected 4.6300 (tolerance 0.005) [synthetic panel pinned to the anchors]
+anchors.curve_2s10s,PASS,critical,2s10s = 48.0bp vs expected 48bp [synthetic panel pinned to the anchors]
+macro.vintage_after_reference_period,PASS,critical,1833 vintage rows across 5 series
+macro.no_future_vintages,PASS,critical,latest vintage 2026-08-06
+macro.no_duplicate_vintage_keys,PASS,critical,"(series, reference period, vintage date) is unique"
+macro.revisions_present,PASS,advisory,"share of reference periods revised at least once: cpi=99%, gdp=98%, indpro=99%, payrolls=99%, unrate=99%"
+cot.as_of_is_tuesday,PASS,critical,"522 report dates, all Tuesdays"
+cot.no_duplicate_keys,PASS,critical,"(market, report date, category) is unique"
+cot.no_negative_positions,PASS,critical,all long and short positions non-negative
+cot.reconciles_to_open_interest,PASS,critical,max |sum(long) - OI| = 0; max |sum(short) - OI| = 0
+cot.publication_lag_applied,PASS,critical,positions are as-of Tuesday and released Friday 15:30 US/Eastern; see features.cot_available_from
+futures.roll_handling,PASS,advisory,"Not applicable: the research layer uses cash and spot series only. Derivatives enter through CFTC futures-and-options positioning, not futures prices, so no continuous-contract roll is constructed. Return proxies for positioning markets are documented in config.COT_UNIVERSE[*].proxy_note and exclude roll yield."
+leakage.market_features,PASS,critical,max change in pre-perturbation outputs = 0.000e+00 over 2472 rows
+leakage.cot_features,PASS,critical,max change in pre-perturbation outputs = 0.000e+00 over 2472 rows
+returns.features.finite,PASS,critical,0 infinite values; 6 NaN (expected at the head of each differenced series)
+reporting.regressions_report_sample_size,PASS,critical,"56 regression rows, all with nobs (min 404, max 2511)"
+timing.h1_equity_forecast.position_precedes_return,PASS,critical,position series and return series share one index; the backtester multiplies position(t) by return(t+1). Contemporaneous corr = -0.016
+timing.h1_equity_forecast.no_lookahead_in_weights,PASS,critical,"2512 finite weights, first on 2016-08-15, last on 2026-08-13"
+timing.h2_rv_gold_real10_hedged.position_precedes_return,PASS,critical,position series and return series share one index; the backtester multiplies position(t) by return(t+1). Contemporaneous corr = -0.083
+timing.h2_rv_gold_real10_hedged.no_lookahead_in_weights,PASS,critical,"2512 finite weights, first on 2016-08-15, last on 2026-08-13"
+timing.h2_rv_gold_real10_single.position_precedes_return,PASS,critical,position series and return series share one index; the backtester multiplies position(t) by return(t+1). Contemporaneous corr = -0.054
+timing.h2_rv_gold_real10_single.no_lookahead_in_weights,PASS,critical,"2512 finite weights, first on 2016-08-15, last on 2026-08-13"
+timing.h2_rv_wti_usd_hedged.position_precedes_return,PASS,critical,position series and return series share one index; the backtester multiplies position(t) by return(t+1). Contemporaneous corr = -0.095
+timing.h2_rv_wti_usd_hedged.no_lookahead_in_weights,PASS,critical,"2512 finite weights, first on 2016-08-15, last on 2026-08-13"
+timing.h2_rv_wti_usd_single.position_precedes_return,PASS,critical,position series and return series share one index; the backtester multiplies position(t) by return(t+1). Contemporaneous corr = -0.065
+timing.h2_rv_wti_usd_single.no_lookahead_in_weights,PASS,critical,"2512 finite weights, first on 2016-08-15, last on 2026-08-13"
+timing.h2_rv_breakeven_wti_hedged.position_precedes_return,PASS,critical,position series and return series share one index; the backtester multiplies position(t) by return(t+1). Contemporaneous corr = -0.068
+timing.h2_rv_breakeven_wti_hedged.no_lookahead_in_weights,PASS,critical,"2512 finite weights, first on 2016-08-15, last on 2026-08-13"
+timing.h2_rv_spx_vix_hedged.position_precedes_return,PASS,critical,position series and return series share one index; the backtester multiplies position(t) by return(t+1). Contemporaneous corr = -0.092
+timing.h2_rv_spx_vix_hedged.no_lookahead_in_weights,PASS,critical,"2512 finite weights, first on 2016-08-15, last on 2026-08-13"
+timing.h2_rv_spx_vix_single.position_precedes_return,PASS,critical,position series and return series share one index; the backtester multiplies position(t) by return(t+1). Contemporaneous corr = -0.045
+timing.h2_rv_spx_vix_single.no_lookahead_in_weights,PASS,critical,"2512 finite weights, first on 2016-08-15, last on 2026-08-13"
+timing.h3_positioning_es.position_precedes_return,PASS,critical,position series and return series share one index; the backtester multiplies position(t) by return(t+1). Contemporaneous corr = -0.022
+timing.h3_positioning_es.no_lookahead_in_weights,PASS,critical,"2512 finite weights, first on 2016-08-15, last on 2026-08-13"
+timing.h3_positioning_zn.position_precedes_return,PASS,critical,position series and return series share one index; the backtester multiplies position(t) by return(t+1). Contemporaneous corr = -0.013
+timing.h3_positioning_zn.no_lookahead_in_weights,PASS,critical,"2512 finite weights, first on 2016-08-15, last on 2026-08-13"
+timing.h3_positioning_6e.position_precedes_return,PASS,critical,position series and return series share one index; the backtester multiplies position(t) by return(t+1). Contemporaneous corr = -0.018
+timing.h3_positioning_6e.no_lookahead_in_weights,PASS,critical,"2512 finite weights, first on 2016-08-15, last on 2026-08-13"
+timing.h3_positioning_cl.position_precedes_return,PASS,critical,position series and return series share one index; the backtester multiplies position(t) by return(t+1). Contemporaneous corr = -0.041
+timing.h3_positioning_cl.no_lookahead_in_weights,PASS,critical,"2512 finite weights, first on 2016-08-15, last on 2026-08-13"
+timing.h3_positioning_gc.position_precedes_return,PASS,critical,position series and return series share one index; the backtester multiplies position(t) by return(t+1). Contemporaneous corr = -0.023
+timing.h3_positioning_gc.no_lookahead_in_weights,PASS,critical,"2512 finite weights, first on 2016-08-15, last on 2026-08-13"
+reporting.backtests_report_trade_count,PASS,critical,"208 backtest rows, all with a trade count (total 12768)"
+leakage.relative_value_signal,PASS,critical,max change in pre-perturbation outputs = 0.000e+00 over 2472 rows
+reporting.charts_carry_date_range,PASS,critical,"17 charts written, each stamped with its start and end date"
